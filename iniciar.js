@@ -1,101 +1,73 @@
 
-const { 'default': makeWASocket, useMultiFileAuthState, makeInMemoryStore, DisconnectReason, WAGroupMetadata, relayWAMessage,	MediaPathMap, mentionedJid, processTime, MediaType, Browser, MessageType, Presence, Mimetype, Browsers, delay, fetchLatestBaileysVersion, MessageRetryMap, extractGroupMetadata, generateWAMessageFromContent, proto, otherOpts, makeCacheableSignalKeyStore } = require('@whiskeysockets/baileys');
+//========MÓDULOS-BEILEYS========\\
+//======@whiskeysockets/baileys=====\\
 
-//=========MODULOS-ABAIXO========\\
+const { makeWASocket, downloadContentFromMessage, fetchLatestBaileysVersion, useMultiFileAuthState, makeInMemoryStore, DisconnectReason, WAGroupMetadata, relayWAMessage, MediaPathMap, mentionedJid, processTime, MediaType, Browser, MessageType, Presence, Mimetype, Browsers, delay, MessageRetryMap, generateForwardMessageContent, generateMessageContent, generateWAMessage, getBinaryNodeChild, getContentType, getDownloadedMediaMessage, getMessageTag, getMimetype, getRandomId, getTag, isBinaryNode, isGroup, isJsonNode, isMediaMessage, isMimetype, isTag, loadMessage, parseJid, parseMimetype, prepareWAMessageMedia, proto, Baileys, useSingleFileAuthState } = require('./consts-func.js');
 
-const { Boom, axios, fs, cheerio, crypto, util, P, NodeCache, linkfy, request, ms, ffmpeg, fetch, qrterminal, libsignal, exec, spawn, execSync, moment, colors, time, hora, date }  = require('./consts-func.js');
+//=========MÓDULOS-ABAIXO========\\
 
-//const puppeteer = require('puppeteer');
+const {  Boom, axios, fs, cheerio, crypto, util, P, NodeCache, linkfy, request, ms, ffmpeg, fetch, qrterminal, libsignal, exec, spawn, execSync, moment, colors, time, hora, date } = require('./consts-func.js');
 
 
 //=========FUNÇÕES-ABAIXO========\\
 
-const dadosDir = './dados';
-const masterQrDir = './dados/MASTER-QR';
+// Import the Baileys library
+//const { Baileys, useSingleFileAuthState } = require('@adiwajshing/baileys');
 
-if (!fs.existsSync(dadosDir)) {
-  fs.mkdirSync(dadosDir);
+// Create a new instance of Baileys
+const baik = new Baileys();
+
+// Method 1: QR Code Scanning
+async function startWithQRCode() {
+  // Create a QR code and display it on the WhatsApp Web interface
+  const qrCode = await baik.generateQRCode();
+  console.log(`Scan the QR code: ${qrCode}`);
+
+  // Wait for the user to scan the QR code and authenticate
+  await baik.waitForAuthentication();
+
+  // Once authenticated, start the WhatsApp client
+  await baik.start();
+  console.log('WhatsApp client started!');
 }
 
-if (!fs.existsSync(masterQrDir)) {
-  fs.mkdirSync(masterQrDir);
+// Method 2: Authentication Token
+async function startWithAuthToken() {
+  // Request an authentication token from the WhatsApp Web interface
+  const authToken = await baik.getAuthToken();
+  console.log(`Enter the authentication token: ${authToken}`);
+
+  // Wait for the user to enter the authentication token
+  const token = await readline.question('Enter the authentication token: ');
+  baik.useAuthState(useSingleFileAuthState(token));
+
+  // Start the WhatsApp client using the authentication token
+  await baik.start();
+  console.log('WhatsApp client started!');
 }
 
+// Main function to start the WhatsApp client
+async function iniciar() {
+  console.log('Select a method to start the WhatsApp client:');
+  console.log('1. QR Code Scanning');
+  console.log('2. Authentication Token');
+
+  const choice = await readline.question('Enter your choice (1/2): ');
+
+  if (choice === '1') {
+    await startWithQRCode();
+  } else if (choice === '2') {
+    await startWithAuthToken();
+  } else {
+    console.log('Invalid choice. Exiting...');
+    process.exit(1);
+  }
+}
+
+iniciar();
 
 //========Conexão-Via-QRcode========\\
 
-async function connectToWhatsAppViaQR() {
-  const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys');
-  const sock = makeWASocket({
-    auth: state,
-    printQRInTerminal: true
-  });
 
-  sock.ev.on('connection.update', (update) => {
-    const { connection, lastDisconnect } = update;
-    if (connection === 'close') {
-      const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
-      console.log('connection closed due to ', lastDisconnect?.error, ', reconnecting ', shouldReconnect);
-      if (shouldReconnect) {
-        connectToWhatsAppViaQR();
-      }
-    } else if (connection === 'open') {
-      console.log('opened connection');
-    }
-  });
-
-  sock.ev.on('creds.update', saveCreds);
-}
-
-//========Conexão-Via-Codigo========\\
-//Não funcionando
-
-//const { useMultiFileAuthState } = require('@whiskeysockets/baileys');
-
-async function connectToWhatsAppViaCode() {
-  const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys');
-  const sock = makeWASocket({
-    auth: state,
-    printQRInTerminal: false
-  });
-
-  sock.ev.on('connection.update', (update) => {
-    const { connection, lastDisconnect } = update;
-    if (connection === 'close') {
-      const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
-      console.log('connection closed due to ', lastDisconnect?.error, ', reconnecting ', shouldReconnect);
-      if (shouldReconnect) {
-        connectToWhatsAppViaCode();
-      }
-    } else if (connection === 'open') {
-      console.log('opened connection');
-    }
-  });
-
-  sock.ev.on('creds.update', saveCreds);
-
-  // Gerar o código de emparelhamento
-  const phoneNumber = await getPhoneNumberFromUser();
-  const code = await sock.generateCode(phoneNumber);
-  console.log('Código de emparelhamento:', code);
-}
-
-async function getPhoneNumberFromUser() {
-  return new Promise((resolve, reject) => {
-    const readline = require('readline').createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-    readline.question('Digite o número de telefone:', (phoneNumber) => {
-      readline.close();
-      resolve(phoneNumber);
-    });
-  });
-}
 
 //===========Inicia o Bot===========\\
-if (process.argv[2] === 'sim' || process.argv[2] === 'yes') {
-  connectToWhatsAppViaCode();
-} else {
-  connectToWhatsAppViaQR();
-}
