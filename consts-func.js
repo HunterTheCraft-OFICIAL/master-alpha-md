@@ -83,7 +83,7 @@ module.exports = {
 //========MÓDULOS-BEILEYS========\\
 //======@whiskeysockets/baileys======\\
 
-makeWASocket, downloadContentFromMessage, fetchLatestBaileysVersion, useMultiFileAuthState, makeInMemoryStore, DisconnectReason, WAGroupMetadata, relayWAMessage, MediaPathMap, mentionedJid, processTime, MediaType, Browser, MessageType, Presence, Mimetype, Browsers, delay, MessageRetryMap, generateForwardMessageContent, generateMessageContent, generateWAMessage, getBinaryNodeChild, getContentType, getDownloadedMediaMessage, getMessageTag, getMimetype, getRandomId, getTag, isBinaryNode, isGroup, isJsonNode, isMediaMessage, isMimetype, isTag, loadMessage, parseJid, parseMimetype, prepareWAMessageMedia, proto, Baileys, useSingleFileAuthState
+makeWASocket, downloadContentFromMessage, fetchLatestBaileysVersion, useMultiFileAuthState, makeInMemoryStore, DisconnectReason, WAGroupMetadata, relayWAMessage, MediaPathMap, mentionedJid, processTime, MediaType, Browser, MessageType, Presence, Mimetype, Browsers, delay, MessageRetryMap, generateForwardMessageContent, generateMessageContent, generateWAMessage, getBinaryNodeChild, getContentType, getDownloadedMediaMessage, getMessageTag, getMimetype, getRandomId, getTag, isBinaryNode, isGroup, isJsonNode, isMediaMessage, isMimetype, isTag, loadMessage, parseJid, parseMimetype, prepareWAMessageMedia, proto, Baileys, useSingleFileAuthState, 
 
 //=========MÓDULOS-ABAIXO========\\
  Boom, axios, fs, cheerio, crypto, util, P, NodeCache, linkfy, request, ms, ffmpeg, fetch, qrterminal, libsignal, exec, spawn, execSync, moment, colors, time, hora, date 
