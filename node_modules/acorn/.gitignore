@@ -1,8 +1,0 @@
-.DS_Store
-.tern-port
-/node_modules
-/local
-/acorn/dist
-/acorn-loose/dist
-/acorn-walk/dist
-/yarn.lock

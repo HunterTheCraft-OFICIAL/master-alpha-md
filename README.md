@@ -5,6 +5,13 @@
 
 O Projeto Master Alpha MD é um Bot de Whatsapp básico que visa se conectar ao WhatsApp com configurações básicas iniciais já definidas.
 
+## Funções
+|                                                            |     |
+| ---------------------------------------------------------- | --- |
+| **Criar Qr code** para se Conectar no Whatsapp | ×  |
+| Criar código para se Conectar no Whatsapp **sem QR code** | ×  |
+| Biblioteca Básica com a Beileys Instalada? | ✓  |
+
 ## Objetivo
 
 O objetivo do projeto é criar um Bot de Whatsapp que possa ser utilizado como base para futuras implementações e melhorias.
